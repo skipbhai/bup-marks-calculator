@@ -335,6 +335,20 @@ $('copyBtn').onclick=async()=>{
    Uses the free counterapi.dev service (counts once per browser session).
    If the service is unreachable the number shows "—" and nothing else breaks.
    Change NS/KEY if you want a fresh counter. */
+  const NS='roadmap-bup-calc',KEY='visits';
+let vNum=null;
+function loadVisitors(){
+  const seen=sessionStorage.getItem('rm_seen');
+  const url=`https://api.counterapi.dev/v1/${NS}/${KEY}${seen?"":"/up"}`;
+  fetch(url).then(r=>r.json()).then(d=>{
+    vNum=Number(d.count);sessionStorage.setItem('rm_seen','1');showV();
+  }).catch(()=>{$('vCount').textContent='—'});
+}
+function showV(){if(vNum===null)return;const s=String(vNum);$('vCount').textContent=lang==='bn'?s.replace(/\d/g,d=>BN[d]):s}
+loadVisitors.fmt=showV;
+
+$('yr').textContent=new Date().getFullYear();
+applyLang();loadVisitors();
 
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
